@@ -12,13 +12,13 @@ class SettingsEntity {
   final bool lineHighlight;
   final double fontSize;
   final bool autoLineBreak;
-
   final bool trimSpaces;
   final List<String> extensions;
   final String customSymbols;
   final bool lineNumbers;
   final String fontFamily;
   final bool autoSave;
+  final bool useSystemShell;
   @enumerated
   final List<CompilePlatform> compilePlatforms;
   @enumerated
@@ -41,6 +41,7 @@ class SettingsEntity {
     this.lineNumbers = false,
     this.fontFamily = 'Roboto',
     this.autoSave = false,
+    this.useSystemShell = false,
     this.compilePlatforms = const [],
     this.compileMode = CompileMode.debug,
     this.compileArch = CompileArch.arm,

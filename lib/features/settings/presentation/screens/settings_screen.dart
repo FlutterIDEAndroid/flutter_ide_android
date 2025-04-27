@@ -45,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text(
               'Configurações do tema',
             ),
-            onTap: () => Navigator.pushNamed(context, '/general'),
+            onTap: () => Navigator.pushNamed(context, '/general_settings'),
           ),
           const Gap(20),
           ListTile(
@@ -56,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text(
               'Configurações do editor',
             ),
-            onTap: () => Navigator.pushNamed(context, '/editor'),
+            onTap: () => Navigator.pushNamed(context, '/editor_settings'),
           ),
           const Gap(20),
           ListTile(
@@ -67,6 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text(
               'Configurações do terminal',
             ),
+            onTap: () => Navigator.pushNamed(context, '/terminal_settings'),
           ),
           const Gap(20),
           ListTile(
@@ -77,7 +78,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text(
               'Configurações de compilação',
             ),
-            onTap: () => Navigator.pushNamed(context, '/execute_debug'),
+            onTap: () =>
+                Navigator.pushNamed(context, '/execute_debug_settings'),
           ),
           const Gap(20),
           const Divider(),

@@ -105,6 +105,11 @@ const SettingsModelSchema = CollectionSchema(
       id: 16,
       name: r'trimSpaces',
       type: IsarType.bool,
+    ),
+    r'useSystemShell': PropertySchema(
+      id: 17,
+      name: r'useSystemShell',
+      type: IsarType.bool,
     )
   },
   estimateSize: _settingsModelEstimateSize,
@@ -164,6 +169,7 @@ void _settingsModelSerialize(
   writer.writeBool(offsets[14], object.lineNumbers);
   writer.writeByte(offsets[15], object.themeOption.index);
   writer.writeBool(offsets[16], object.trimSpaces);
+  writer.writeBool(offsets[17], object.useSystemShell);
 }
 
 SettingsModel _settingsModelDeserialize(
@@ -202,6 +208,7 @@ SettingsModel _settingsModelDeserialize(
             reader.readByteOrNull(offsets[15])] ??
         ThemeOption.dark,
     trimSpaces: reader.readBoolOrNull(offsets[16]) ?? false,
+    useSystemShell: reader.readBoolOrNull(offsets[17]) ?? false,
   );
   return object;
 }
@@ -258,6 +265,8 @@ P _settingsModelDeserializeProp<P>(
               reader.readByteOrNull(offset)] ??
           ThemeOption.dark) as P;
     case 16:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 17:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1428,6 +1437,16 @@ extension SettingsModelQueryFilter
       ));
     });
   }
+
+  QueryBuilder<SettingsModel, SettingsModel, QAfterFilterCondition>
+      useSystemShellEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'useSystemShell',
+        value: value,
+      ));
+    });
+  }
 }
 
 extension SettingsModelQueryObject
@@ -1636,6 +1655,20 @@ extension SettingsModelQuerySortBy
       sortByTrimSpacesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trimSpaces', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SettingsModel, SettingsModel, QAfterSortBy>
+      sortByUseSystemShell() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useSystemShell', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SettingsModel, SettingsModel, QAfterSortBy>
+      sortByUseSystemShellDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useSystemShell', Sort.desc);
     });
   }
 }
@@ -1854,6 +1887,20 @@ extension SettingsModelQuerySortThenBy
       return query.addSortBy(r'trimSpaces', Sort.desc);
     });
   }
+
+  QueryBuilder<SettingsModel, SettingsModel, QAfterSortBy>
+      thenByUseSystemShell() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useSystemShell', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SettingsModel, SettingsModel, QAfterSortBy>
+      thenByUseSystemShellDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useSystemShell', Sort.desc);
+    });
+  }
 }
 
 extension SettingsModelQueryWhereDistinct
@@ -1972,6 +2019,13 @@ extension SettingsModelQueryWhereDistinct
       return query.addDistinctBy(r'trimSpaces');
     });
   }
+
+  QueryBuilder<SettingsModel, SettingsModel, QDistinct>
+      distinctByUseSystemShell() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'useSystemShell');
+    });
+  }
 }
 
 extension SettingsModelQueryProperty
@@ -2087,6 +2141,12 @@ extension SettingsModelQueryProperty
   QueryBuilder<SettingsModel, bool, QQueryOperations> trimSpacesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'trimSpaces');
+    });
+  }
+
+  QueryBuilder<SettingsModel, bool, QQueryOperations> useSystemShellProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'useSystemShell');
     });
   }
 }

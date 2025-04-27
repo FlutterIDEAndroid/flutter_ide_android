@@ -3,6 +3,7 @@ import 'package:flutter_ide_android/features/onboarding/domain/usecases/get_andr
 import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/editor_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/terminal_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/theme_settings_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -121,6 +122,12 @@ Future<void> init() async {
   );
   sl.registerFactory(
     () => CompileSettingsProvider(
+      getSettings: sl(),
+      updateSetting: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => TerminalSettingsProvider(
       getSettings: sl(),
       updateSetting: sl(),
     ),

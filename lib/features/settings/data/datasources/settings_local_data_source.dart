@@ -32,6 +32,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
       lineNumbers: true,
       fontFamily: 'Roboto',
       autoSave: false,
+      useSystemShell: false,
       compilePlatforms: [CompilePlatform.android],
       compileMode: CompileMode.debug,
       compileArch: CompileArch.arm64,

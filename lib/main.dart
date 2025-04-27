@@ -4,11 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ide_android/core/util/enums.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/editor_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/terminal_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/theme_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/editor_settings_screen.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/execute_debug_settings_screen.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/general_settings_screen.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/settings_screen.dart';
+import 'package:flutter_ide_android/features/settings/presentation/screens/terminal_settings_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/injection_container.dart' as di;
@@ -48,6 +50,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => di.sl<CompileSettingsProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.sl<TerminalSettingsProvider>(),
         ),
       ],
       child: Consumer<ThemeSettingsProvider>(
@@ -150,9 +155,11 @@ class MyApp extends StatelessWidget {
                   '/': (_) => const OnboardingScreen(),
                   '/home': (_) => const HomeScreen(),
                   '/settings': (_) => const SettingsScreen(),
-                  '/general': (_) => const GeneralSettingsScreen(),
-                  '/editor': (_) => const EditorSettingsScreen(),
-                  '/execute_debug': (_) => const ExecuteDebugSettingsScreen(),
+                  '/general_settings': (_) => const GeneralSettingsScreen(),
+                  '/editor_settings': (_) => const EditorSettingsScreen(),
+                  '/execute_debug_settings': (_) =>
+                      const ExecuteDebugSettingsScreen(),
+                  '/terminal_settings': (_) => const TerminalSettingsScreen(),
                   '/terminal': (_) => const TerminalScreen(),
                 },
               );
