@@ -1,6 +1,14 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ide_android/core/util/enums.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/editor_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/theme_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/screens/editor_settings_screen.dart';
+import 'package:flutter_ide_android/features/settings/presentation/screens/execute_debug_settings_screen.dart';
+import 'package:flutter_ide_android/features/settings/presentation/screens/general_settings_screen.dart';
+import 'package:flutter_ide_android/features/settings/presentation/screens/settings_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/injection_container.dart' as di;
@@ -11,7 +19,11 @@ import 'features/terminal/presentation/screens/terminal_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await di.init();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(const MyApp());
 }
 
@@ -28,49 +40,126 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<TerminalProvider>(
           create: (_) => di.sl<TerminalProvider>(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => di.sl<ThemeSettingsProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.sl<EditorSettingsProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.sl<CompileSettingsProvider>(),
+        ),
       ],
-      child: DynamicColorBuilder(
-          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        ColorScheme lightScheme;
-        ColorScheme darkScheme;
+      child: Consumer<ThemeSettingsProvider>(
+        builder: (_, vm, __) {
+          ThemeMode themeMode;
+          switch (vm.selected) {
+            case ThemeOption.materialYou:
+              themeMode = ThemeMode.system;
+              break;
+            case ThemeOption.light:
+              themeMode = ThemeMode.light;
+              break;
+            case ThemeOption.dark:
+            case ThemeOption.darkAmoled:
+              themeMode = ThemeMode.dark;
+              break;
+          }
 
-        if (lightDynamic != null && darkDynamic != null) {
-          lightScheme = lightDynamic.harmonized();
-          darkScheme = darkDynamic.harmonized();
-        } else {
-          lightScheme = ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.light,
-          );
-          darkScheme = ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.dark,
-          );
-        }
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle(
-            statusBarColor: darkScheme.surface,
-            systemNavigationBarColor: darkScheme.surface,
-          ),
-          child: MaterialApp(
-            initialRoute: '/',
-            routes: {
-              '/': (_) => const OnboardingScreen(),
-              '/home': (_) => const HomeScreen(),
-              // '/editor': (_) => EditorScreen(),
-              '/terminal': (_) => const TerminalScreen(),
+          return DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              final bool useDynamic = vm.selected == ThemeOption.materialYou &&
+                  lightDynamic != null &&
+                  darkDynamic != null;
+
+              final ColorScheme lightScheme = useDynamic
+                  ? lightDynamic.harmonized()
+                  : ColorScheme.fromSeed(
+                      seedColor: Colors.blueGrey, brightness: Brightness.light);
+              ColorScheme darkScheme = useDynamic
+                  ? darkDynamic.harmonized().copyWith()
+                  : ColorScheme.fromSeed(
+                      seedColor: Colors.blueGrey, brightness: Brightness.dark);
+              if (vm.selected == ThemeOption.darkAmoled) {
+                darkScheme = darkScheme.copyWith(surface: Colors.black);
+              }
+
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                themeMode: themeMode,
+                theme: ThemeData(
+                  colorScheme: lightScheme,
+                  useMaterial3: true,
+                  splashColor: Colors.transparent,
+                  navigationBarTheme: NavigationBarThemeData(
+                    backgroundColor: lightScheme.surface,
+                  ),
+                  pageTransitionsTheme: PageTransitionsTheme(
+                    builders: {
+                      for (final platform in TargetPlatform.values)
+                        platform: const FadeTransitionsBuilder(),
+                    },
+                  ),
+                ),
+                darkTheme: ThemeData(
+                  colorScheme: darkScheme,
+                  useMaterial3: true,
+                  splashColor: Colors.transparent,
+                  navigationBarTheme: NavigationBarThemeData(
+                    backgroundColor: darkScheme.surface,
+                  ),
+                  pageTransitionsTheme: PageTransitionsTheme(
+                    builders: {
+                      for (final platform in TargetPlatform.values)
+                        platform: const FadeTransitionsBuilder(),
+                    },
+                  ),
+                ),
+                builder: (context, child) {
+                  final SystemUiOverlayStyle overlayStyle =
+                      SystemUiOverlayStyle(
+                    statusBarColor: themeMode == ThemeMode.dark
+                        ? darkScheme.surface
+                        : vm.selected == ThemeOption.materialYou
+                            ? darkScheme.surface
+                            : lightScheme.surface,
+                    statusBarIconBrightness: themeMode == ThemeMode.dark
+                        ? Brightness.light
+                        : vm.selected == ThemeOption.materialYou
+                            ? Brightness.light
+                            : Brightness.dark,
+                    systemNavigationBarColor: themeMode == ThemeMode.dark
+                        ? darkScheme.surface
+                        : vm.selected == ThemeOption.materialYou
+                            ? darkScheme.surface
+                            : lightScheme.surface,
+                    systemNavigationBarIconBrightness:
+                        themeMode == ThemeMode.dark
+                            ? Brightness.light
+                            : vm.selected == ThemeOption.materialYou
+                                ? Brightness.light
+                                : Brightness.dark,
+                  );
+                  return AnnotatedRegion<SystemUiOverlayStyle>(
+                    value: overlayStyle,
+                    child: child!,
+                  );
+                },
+                initialRoute: '/',
+                routes: {
+                  '/': (_) => const OnboardingScreen(),
+                  '/home': (_) => const HomeScreen(),
+                  '/settings': (_) => const SettingsScreen(),
+                  '/general': (_) => const GeneralSettingsScreen(),
+                  '/editor': (_) => const EditorSettingsScreen(),
+                  '/execute_debug': (_) => const ExecuteDebugSettingsScreen(),
+                  '/terminal': (_) => const TerminalScreen(),
+                },
+              );
             },
-            theme: ThemeData(
-              colorScheme: lightScheme,
-              useMaterial3: true,
-            ),
-            darkTheme: ThemeData(
-              colorScheme: darkScheme,
-              useMaterial3: true,
-            ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -97,9 +186,32 @@ class HomeScreen extends StatelessWidget {
               label: const Text('Terminal'),
               onPressed: () => Navigator.pushNamed(context, '/terminal'),
             ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.settings_outlined),
+              label: const Text('Configurações'),
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class FadeTransitionsBuilder extends PageTransitionsBuilder {
+  const FadeTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T>? route,
+    BuildContext? context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget? child,
+  ) {
+    return FadeTransition(
+      opacity: animation,
+      child: child,
     );
   }
 }

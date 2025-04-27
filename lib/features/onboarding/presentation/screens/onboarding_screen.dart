@@ -54,9 +54,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     final vm = Provider.of<OnboardingProvider>(context);
 
-    return ChangeNotifierProvider<OnboardingProvider>(
-      create: (_) => vm,
-      child: Scaffold(
+    return Consumer<OnboardingProvider>(
+      builder: (_, vm, child) => Scaffold(
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
@@ -106,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _pageController,
                 count: _lastPageIndex + 1,
                 effect: WormEffect(
-                  dotColor: Colors.black26,
+                  dotColor: colors.onPrimary,
                   activeDotColor: colors.secondary,
                 ),
               ),

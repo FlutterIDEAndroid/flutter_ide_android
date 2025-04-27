@@ -50,6 +50,11 @@ class SdkStep extends StatelessWidget {
                   child: DropdownButtonFormField2<SdkVersion>(
                     isExpanded: true,
                     value: selected,
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                      ),
+                    ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -88,6 +93,11 @@ class SdkStep extends StatelessWidget {
                   child: DropdownButtonFormField2<SdkVersion>(
                     isExpanded: true,
                     value: selectedAndroid,
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                      ),
+                    ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
