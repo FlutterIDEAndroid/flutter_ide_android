@@ -3,39 +3,36 @@ name: Build & Release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
-    name: Build & Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.28.0-0.1.pre'
           channel: 'beta'
-
       - name: Install Dependencies
         run: flutter pub get
-
       - name: Build APK
         run: flutter build apk --release
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v1.0.0
           release_name: Release v1.0.0
           draft: false
           prerelease: false
-
       - name: Upload Artifact
         uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/app/outputs/apk/release/app-release.apk
