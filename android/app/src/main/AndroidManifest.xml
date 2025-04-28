@@ -15,7 +15,9 @@
         android:icon="@mipmap/logo"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
+        android:extractNativeLibs="true"
         android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
@@ -43,6 +45,34 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+               <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+       
+       
+             <activity
+            android:name="vn.vhn.vhscode.root.NewSessionActivity"
+            android:exported="false"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name="vn.vhn.vhscode.root.EditorHostActivity"
+            
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|keyboard|navigation|fontScale|uiMode"
+            android:resizeableActivity="true"
+             android:usesCleartextTraffic="true"
+           
+            android:hardwareAccelerated="true">
+        </activity>
+        <activity
+            android:name=".GithubReleaseInstallActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".OpenTerminalActivity"
+            android:exported="false"
+            android:launchMode="singleInstance" />
+        <service
+            android:name="vn.vhn.vhscode.CodeServerService"
+            android:enabled="true"
+            android:exported="true" />
         <provider
             android:name=".IDEContentProvider"
             android:authorities="com.termux.provider"

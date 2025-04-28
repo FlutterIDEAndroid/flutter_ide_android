@@ -10,7 +10,7 @@ class SaveSetting implements UseCase<void, SettingsEntity> {
   SaveSetting({required this.repository});
 
   @override
-  Future<Either<Failure, void>> call(SettingsEntity settings) {
+  Future<Either<Failure, SettingsEntity>> call(SettingsEntity settings) {
     return repository.saveSettings(settings);
   }
 }

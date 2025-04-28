@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/terminal_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/settings_provider.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class TerminalSettingsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
         ),
       ),
-      body: Consumer<TerminalSettingsProvider>(
+      body: Consumer<SettingsProvider>(
         builder: (context, vm, child) {
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -46,12 +46,28 @@ class TerminalSettingsScreen extends StatelessWidget {
                   secondary: const Icon(Icons.android_rounded),
                   title: const Text('Usar shell do sistema'),
                   subtitle: const Text(
-                    'Se ativado, /system/bin/bash será utilizado no terminal ',
+                    "Se ativado, '/system/bin/bash' será utilizado no terminal ",
                   ),
                   value: vm.useSystemShell,
                   onChanged: (v) {
                     vm.toggleUseSystemShell(v);
                   },
+                ),
+              ),
+              Card(
+                color: colors.secondaryContainer,
+                margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(10),
+                    bottom: Radius.circular(20),
+                  ),
+                ),
+                child: const ListTile(
+                  title: Text('Dart Sever Analysis path'),
+                  subtitle: Text(
+                    "Path do Sever Analysis'/data/data/com.termux/files/usr/opt/flutter/bin/cache/dart-sdk'",
+                  ),
                 ),
               ),
             ],

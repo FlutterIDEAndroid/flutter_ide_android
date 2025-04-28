@@ -3,31 +3,35 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_ide_android/core/util/enums.dart';
 
-Future<String?> showCustomSymbolsDialog(
+Future<List<String>?> showCustomSymbolsDialog(
   BuildContext context, {
-  String initialSymbols = '',
+  required List<String> initialSymbols,
 }) {
-  final controller = TextEditingController(text: initialSymbols);
-  return showDialog<String>(
+  final controller = TextEditingController(text: initialSymbols.join(', '));
+  return showDialog<List<String>>(
     context: context,
-    builder: (ctx) => BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-      child: AlertDialog(
-        title: const Text('Simbolos Customizados'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: initialSymbols),
-          maxLines: null,
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cancelar')),
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(controller.text),
-              child: const Text('Confirmar')),
-        ],
+    builder: (ctx) => AlertDialog(
+      title: const Text('Símbolos Customizados'),
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(hintText: 'sep. por vírgula'),
+        maxLines: null,
       ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar')),
+        TextButton(
+            onPressed: () {
+              final splits = controller.text
+                  .split(',')
+                  .map((s) => s.trim())
+                  .where((s) => s.isNotEmpty)
+                  .toList();
+              Navigator.of(ctx).pop(splits);
+            },
+            child: const Text('Confirmar')),
+      ],
     ),
   );
 }

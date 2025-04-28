@@ -77,10 +77,14 @@ class OnboardingProvider extends ChangeNotifier {
     final result = await getSdkVersions.call(NoParams());
 
     result.fold(
-      (fail) => errorMessage = fail.message,
+      (fail) {
+        errorMessage = fail.message;
+        print(fail.message);
+      },
       (list) {
         selectedVersion = list.firstOrNull;
         sdkVersions = list;
+        print(list);
       },
     );
     // print(result.fold(ifLeft, ifRight));

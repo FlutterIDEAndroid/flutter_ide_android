@@ -2,10 +2,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ide_android/core/util/enums.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/editor_settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/terminal_settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/theme_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/editor_settings_screen.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/execute_debug_settings_screen.dart';
 import 'package:flutter_ide_android/features/settings/presentation/screens/general_settings_screen.dart';
@@ -43,22 +40,13 @@ class MyApp extends StatelessWidget {
           create: (_) => di.sl<TerminalProvider>(),
         ),
         ChangeNotifierProvider(
-          create: (_) => di.sl<ThemeSettingsProvider>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.sl<EditorSettingsProvider>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.sl<CompileSettingsProvider>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.sl<TerminalSettingsProvider>(),
+          create: (_) => di.sl<SettingsProvider>()..load(),
         ),
       ],
-      child: Consumer<ThemeSettingsProvider>(
+      child: Consumer<SettingsProvider>(
         builder: (_, vm, __) {
           ThemeMode themeMode;
-          switch (vm.selected) {
+          switch (vm.selectedTheme) {
             case ThemeOption.materialYou:
               themeMode = ThemeMode.system;
               break;
@@ -73,9 +61,10 @@ class MyApp extends StatelessWidget {
 
           return DynamicColorBuilder(
             builder: (lightDynamic, darkDynamic) {
-              final bool useDynamic = vm.selected == ThemeOption.materialYou &&
-                  lightDynamic != null &&
-                  darkDynamic != null;
+              final bool useDynamic =
+                  vm.selectedTheme == ThemeOption.materialYou &&
+                      lightDynamic != null &&
+                      darkDynamic != null;
 
               final ColorScheme lightScheme = useDynamic
                   ? lightDynamic.harmonized()
@@ -85,7 +74,7 @@ class MyApp extends StatelessWidget {
                   ? darkDynamic.harmonized().copyWith()
                   : ColorScheme.fromSeed(
                       seedColor: Colors.blueGrey, brightness: Brightness.dark);
-              if (vm.selected == ThemeOption.darkAmoled) {
+              if (vm.selectedTheme == ThemeOption.darkAmoled) {
                 darkScheme = darkScheme.copyWith(surface: Colors.black);
               }
 
@@ -125,23 +114,23 @@ class MyApp extends StatelessWidget {
                       SystemUiOverlayStyle(
                     statusBarColor: themeMode == ThemeMode.dark
                         ? darkScheme.surface
-                        : vm.selected == ThemeOption.materialYou
+                        : vm.selectedTheme == ThemeOption.materialYou
                             ? darkScheme.surface
                             : lightScheme.surface,
                     statusBarIconBrightness: themeMode == ThemeMode.dark
                         ? Brightness.light
-                        : vm.selected == ThemeOption.materialYou
+                        : vm.selectedTheme == ThemeOption.materialYou
                             ? Brightness.light
                             : Brightness.dark,
                     systemNavigationBarColor: themeMode == ThemeMode.dark
                         ? darkScheme.surface
-                        : vm.selected == ThemeOption.materialYou
+                        : vm.selectedTheme == ThemeOption.materialYou
                             ? darkScheme.surface
                             : lightScheme.surface,
                     systemNavigationBarIconBrightness:
                         themeMode == ThemeMode.dark
                             ? Brightness.light
-                            : vm.selected == ThemeOption.materialYou
+                            : vm.selectedTheme == ThemeOption.materialYou
                                 ? Brightness.light
                                 : Brightness.dark,
                   );

@@ -33,13 +33,58 @@ import android.content.ContentResolver
 import android.database.Cursor
 import io.flutter.embedding.android.FlutterFragmentActivity
 class MainActivity: FlutterActivity(){
+   private val CHANNEL = "flutter_ide_android"
      override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
        instalBootStrap()
     }
+     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+    super.configureFlutterEngine(flutterEngine)
+    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        when (call.method) {
+            "installBootstrap" -> {
+                instalBootStrap()
+                result.success(null)
+            }
+            "getUsrPath" -> {
+                    // Recupera o restante do path passado pelo Flutter
+                   
+                    val fullPath = "/data/data/${applicationContext.packageName}/files/usr"
+                    result.success(fullPath)
+                }
+             "getBinPath" -> {
+                    // Recupera o restante do path passado pelo Flutter
+                   
+                    val fullPath = "/data/data/${applicationContext.packageName}/files/usr"
+                    result.success(fullPath)
+                }
+             "getLibPath" -> {
+                    // Recupera o restante do path passado pelo Flutter
+                   
+                    val fullPath = "/data/data/${applicationContext.packageName}/files/lib"
+                    result.success(fullPath)
+                }
+             "getHomePath" -> {
+                    // Recupera o restante do path passado pelo Flutter
+                   
+                    val fullPath = "/data/data/${applicationContext.packageName}/files/home"
+                    result.success(fullPath)
+                }
+          
+            else -> {
+                result.notImplemented()
+            }
+        }
+    }
+ }
     
     private fun instalBootStrap() {
       TermuxInstaller.setupIfNeeded(this) {
     }
   }
+   private fun getFlutterPath(): String {
+        val basePath = "/data/data/${applicationContext.packageName}/files/usr/opt/flutter/bin/cache/dart-sdk"
+        return basePath
+        
+    }
 }

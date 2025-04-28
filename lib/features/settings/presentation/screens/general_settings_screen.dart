@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/util/enums.dart';
-import '../providers/theme_settings_provider.dart';
+import '../providers/settings_provider.dart';
 
 class GeneralSettingsScreen extends StatefulWidget {
   const GeneralSettingsScreen({super.key});
@@ -27,9 +27,9 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
         ),
       ),
-      body: Consumer<ThemeSettingsProvider>(
+      body: Consumer<SettingsProvider>(
         builder: (context, vm, child) {
-          final selected = vm.selected;
+          final selected = vm.selectedTheme;
 
           // Modos atuais
           // final bool followSystem = selected == ThemeOption.dark;
@@ -84,7 +84,8 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
                   onChanged: selected == ThemeOption.materialYou
                       ? null
                       : (v) {
-                          vm.select(v ? ThemeOption.dark : ThemeOption.light);
+                          vm.selectTheme(
+                              v ? ThemeOption.dark : ThemeOption.light);
                         },
                 ),
               ),
@@ -105,7 +106,7 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
                           !isDarkActive
                       ? null
                       : (v) {
-                          vm.select(
+                          vm.selectTheme(
                               v ? ThemeOption.darkAmoled : ThemeOption.dark);
                         },
                 ),
@@ -125,7 +126,8 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
                   subtitle: const Text('Extraídas do wallpaper/system'),
                   value: selected == ThemeOption.materialYou,
                   onChanged: (v) {
-                    vm.select(v ? ThemeOption.materialYou : ThemeOption.light);
+                    vm.selectTheme(
+                        v ? ThemeOption.materialYou : ThemeOption.light);
                   },
                 ),
               ),

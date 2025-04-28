@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
+import 'package:flutter_ide_android/features/settings/presentation/providers/settings_provider.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,7 @@ class _ExecuteDebugSettingsScreenState
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
         ),
       ),
-      body: Consumer<CompileSettingsProvider>(
+      body: Consumer<SettingsProvider>(
         builder: (context, vm, child) {
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -55,11 +55,11 @@ class _ExecuteDebugSettingsScreenState
                 child: ListTile(
                   leading: const Icon(Icons.build_rounded),
                   title: const Text('Modo de Compilação'),
-                  subtitle: Text(vm.mode.name),
+                  subtitle: Text(vm.compileMode.name),
                   onTap: () async {
                     final selectedMode = await showCompileModeDialog(
                       context,
-                      currentMode: vm.mode,
+                      currentMode: vm.compileMode,
                       modes: CompileMode.values,
                     );
                     if (selectedMode != null) {
@@ -101,11 +101,11 @@ class _ExecuteDebugSettingsScreenState
                 child: ListTile(
                   leading: const Icon(Icons.memory),
                   title: const Text('Arquitetura de Compilação'),
-                  subtitle: Text(vm.arch.name),
+                  subtitle: Text(vm.compileArch.name),
                   onTap: () async {
                     final selectedArch = await showCompileArchDialog(
                       context,
-                      currentArch: vm.arch,
+                      currentArch: vm.compileArch,
                       archs: CompileArch.values,
                     );
                     if (selectedArch != null) {

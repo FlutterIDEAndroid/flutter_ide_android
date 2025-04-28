@@ -13,17 +13,22 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<Either<Failure, SettingsEntity>> getSettings() async {
     try {
       final settings = await local.getSettings();
+      print(settings.themeOption);
       return Right(settings);
-    } catch (_) {
+    } catch (f) {
       return Left(CacheFailure());
     }
   }
 
   @override
-  Future<Either<Failure, void>> saveSettings(SettingsEntity settings) async {
+  Future<Either<Failure, SettingsEntity>> saveSettings(
+      SettingsEntity settings) async {
     try {
-      await local.saveSettings(settings);
-      return const Right(null);
+      // local.saveSettings não retorna void, mas a entidade
+      final saved = await local.saveSettings(settings);
+
+      // Atenção: remova o `const` aqui, pois `saved` não é constante
+      return Right(saved);
     } catch (_) {
       return Left(CacheFailure());
     }

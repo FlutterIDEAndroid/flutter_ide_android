@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_ide_android/core/util/terminal.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 import 'package:xterm/xterm.dart';
 
@@ -12,27 +13,32 @@ abstract class TerminalRemoteDataSource {
 }
 
 class TerminalRemoteDataSourceImpl implements TerminalRemoteDataSource {
+  final bool useSystemShell;
   Pty? _pty;
+
   @override
   final Terminal terminal;
   @override
   final TerminalController controller;
 
-  TerminalRemoteDataSourceImpl()
-      : terminal = Terminal(maxLines: 10000),
+  TerminalRemoteDataSourceImpl({bool? useSystemShell})
+      : useSystemShell = useSystemShell ?? false,
+        terminal = Terminal(maxLines: 10000),
         controller = TerminalController();
 
   @override
   Future<void> startTerminal(String workDir) async {
+    final term = TerminalUtil();
+    final executable =
+        useSystemShell ? 'bash' : '/data/data/com.termux/files/usr/lib/bash';
     _pty = Pty.start(
-      '/data/data/com.termux/files/usr/bin/bash',
-      arguments: [],
+      'bash',
       environment: {
-        'HOME': '/data/data/com.termux/files/home',
-        'TERMUX_PREFIX': '/data/data/com.termux/files/usr',
+        'HOME': await term.getHomePath(),
+        'TERMUX_PREFIX': await term.getUsrPath(),
         'TERM': 'xterm-256color',
-        'PATH': '/data/data/com.termux/files/usr/bin',
-        // 'LD_PRELOAD': '/data/data/com.termux/files/usr/lib/libtermux-exec.so',
+        //'PATH': await term.getBinPath(),
+        // 'LD_PRELOAD': '${await term.getLibPath()}/libtermux-exec.so',
       },
       workingDirectory: workDir,
       columns: terminal.viewWidth,

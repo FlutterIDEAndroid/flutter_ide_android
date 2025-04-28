@@ -8,7 +8,7 @@ import '../../domain/usecases/execute_command.dart';
 class TerminalProvider extends ChangeNotifier {
   final ExecuteCommand executeCommand;
   final TerminalRemoteDataSource remoteDataSource;
-  String workDirectory = '/data/data/com.termux/files/usr';
+  String workDirectory = '/data/data/com.termux/files/home';
 
   TerminalProvider({
     required this.executeCommand,

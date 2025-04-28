@@ -1,15 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_ide_android/features/onboarding/domain/usecases/get_android_sdk_versions.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/compile_settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/editor_settings_provider.dart';
 import 'package:flutter_ide_android/features/settings/presentation/providers/settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/terminal_settings_provider.dart';
-import 'package:flutter_ide_android/features/settings/presentation/providers/theme_settings_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/onboarding/data/datasources/sdk_remote_data_source.dart';
 import '../features/onboarding/data/repositories/onboarding_repository_impl.dart';
@@ -17,7 +10,6 @@ import '../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../features/onboarding/domain/usecases/get_sdk_versions.dart';
 import '../features/onboarding/presentation/providers/onboarding_provider.dart';
 import '../features/settings/data/datasources/settings_local_data_source.dart';
-import '../features/settings/data/models/settings_model.dart';
 import '../features/settings/data/repositories/settings_repository_impl.dart';
 import '../features/settings/domain/repositories/settings_repository.dart';
 import '../features/settings/domain/usecases/get_settings.dart';
@@ -36,15 +28,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
-  final prefs = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => prefs);
-
-  final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open(
-    [SettingsModelSchema],
-    directory: dir.path,
-  );
-  sl.registerSingleton<Isar>(isar);
+  // final prefs = await SharedPreferences.getInstance();
+  //sl.registerLazySingleton(() => prefs);
 
   sl.registerLazySingleton<SdkRemoteDataSource>(
     () => SdkRemoteDataSourceImpl(client: sl()),
@@ -54,6 +39,9 @@ Future<void> init() async {
       remoteDataSource: sl<SdkRemoteDataSource>(),
       networkInfo: sl<NetworkInfo>(),
     ),
+  );
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(local: sl()),
   );
   sl.registerLazySingleton(() => GetSdkVersions(sl()));
   sl.registerLazySingleton(() => GetAndroidSdkVersions(sl()));
@@ -69,7 +57,10 @@ Future<void> init() async {
   // 1) Registrar o data source
   // --- DataSource ---
   sl.registerLazySingleton<TerminalRemoteDataSource>(
-    () => TerminalRemoteDataSourceImpl(),
+    () {
+      final useShell = sl<SettingsProvider>().useSystemShell;
+      return TerminalRemoteDataSourceImpl(useSystemShell: useShell);
+    },
   );
 
   sl.registerLazySingleton<TerminalRepository>(
@@ -88,11 +79,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<SettingsLocalDataSource>(
-    () => SettingsLocalDataSourceImpl(isar: sl()),
-  );
-
-  sl.registerLazySingleton<SettingsRepository>(
-    () => SettingsRepositoryImpl(local: sl()),
+    () => SettingsLocalDataSourceImpl(/* prefs: sl() */),
   );
 
   sl.registerLazySingleton(
@@ -103,31 +90,7 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => ThemeSettingsProvider(
-      getSettings: sl(),
-      updateSetting: sl(),
-    ),
-  );
-  sl.registerFactory(
-    () => EditorSettingsProvider(
-      getSettings: sl(),
-      updateSetting: sl(),
-    ),
-  );
-  sl.registerFactory(
     () => SettingsProvider(
-      getSettings: sl(),
-      saveSettings: sl(),
-    ),
-  );
-  sl.registerFactory(
-    () => CompileSettingsProvider(
-      getSettings: sl(),
-      updateSetting: sl(),
-    ),
-  );
-  sl.registerFactory(
-    () => TerminalSettingsProvider(
       getSettings: sl(),
       updateSetting: sl(),
     ),

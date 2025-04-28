@@ -52,8 +52,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    final vm = Provider.of<OnboardingProvider>(context);
-
     return Consumer<OnboardingProvider>(
       builder: (_, vm, child) => Scaffold(
         body: PageView(
