@@ -25,9 +25,11 @@ jobs:
       # ← Novo passo: Gera o keystore com keytool
       - name: Generate release keystore
         env:
-          KEYSTORE_PASSWD: ${{ secrets.KEYSTORE_PASSWD }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWD: ${{ secrets.KEYSTORE_PASSWD }}
         run: |
+          echo "Alias: $KEYSTORE_ALIAS"
+          echo "Pwd length: ${#KEYSTORE_PASSWD}"
           keytool -genkeypair \
             -v \
             -keystore android/app/key.jks \
