@@ -73,7 +73,13 @@ android {
                 cFlags "-Wall", "-Wextra", "-Werror", "-Os", "-fno-stack-protector", "-Wl,--gc-sections"
             }
         }
-         
+         ndk {
+            if (System.env['GPLAY_BUILD'] != '1' && System.env['CI_BUILD'] != '1') {
+                abiFilters 'arm64-v8a'
+            } else if (System.env['USE_SPLITBUILD'] != '1') {
+                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            }
+        }
         buildConfigField "String", "BOOTSTRAP_VERSION", "\"${bootstrapVersion}\""
      
     }
@@ -87,21 +93,11 @@ android {
         }
     }
 
-    signingConfigs {
-        release {
-            keyAlias System.getenv('KEYSTORE_ALIAS')
-            keyPassword System.getenv('KEYSTORE_PASSWD')
-            storeFile file('key.jks')
-            storePassword System.getenv('KEYSTORE_PASSWD')
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-        }
-        debug {
-            signingConfig signingConfigs.debug
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.debug
         }
     }
      externalNativeBuild {
