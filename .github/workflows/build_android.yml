@@ -2,11 +2,14 @@ name: Build & Release
 
 on:
   workflow_dispatch:
-
+permissions:
+      contents: write       # garante permi
 jobs:
   build:
     name: Build & Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # garante permi
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,8 +32,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v0.0.1
-          release_name: Release v0.0.1
+          token: ${{ secrets.GITHUB_TOKEN }}   # <— Aqui você passa o token
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
