@@ -1,4 +1,12 @@
-runs-on: ubuntu-latest
+name: Build & Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
     permissions:
       contents: write
 
