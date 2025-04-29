@@ -39,7 +39,24 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 
+    flavorDimensions "default"
+
+    productFlavors {
+        dev {
+            dimension "default"
+            resValue "string", "app_name", "[DEV]FlutterIDEAndroid"
+            applicationIdSuffix ".dev"
+        }
+
+        prod {
+            dimension "default"
+            resValue "string", "app_name", "FlutterIDEAndroid"
+        }
+    }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.termux"
@@ -56,22 +73,35 @@ android {
                 cFlags "-Wall", "-Wextra", "-Werror", "-Os", "-fno-stack-protector", "-Wl,--gc-sections"
             }
         }
-         ndk {
-            if (System.env['GPLAY_BUILD'] != '1' && System.env['CI_BUILD'] != '1') {
-                abiFilters 'arm64-v8a'
-            } else if (System.env['USE_SPLITBUILD'] != '1') {
-                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
-            }
-        }
+         
         buildConfigField "String", "BOOTSTRAP_VERSION", "\"${bootstrapVersion}\""
      
     }
 
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            universalApk true  
+        }
+    }
+
+    signingConfigs {
+        release {
+            keyAlias System.getenv('KEYSTORE_ALIAS')
+            keyPassword System.getenv('KEYSTORE_PASSWD')
+            storeFile file('key.jks')
+            storePassword System.getenv('KEYSTORE_PASSWD')
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
      externalNativeBuild {
