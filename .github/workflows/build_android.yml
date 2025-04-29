@@ -22,10 +22,23 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Decode Keystore File
-        run: echo "${{ secrets.KEYSTORE }}" | base64 -d > ${{ github.workspace }}/android/app/key.jks
+      # ← Novo passo: Gera o keystore com keytool
+      - name: Generate release keystore
         env:
-          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KEYSTORE_PASSWD: ${{ secrets.KEYSTORE_PASSWD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        run: |
+          keytool -genkeypair \
+            -v \
+            -keystore android/app/key.jks \
+            -storepass "$KEYSTORE_PASSWD" \
+            -keypass "$KEYSTORE_PASSWD" \
+            -alias "$KEYSTORE_ALIAS" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Your Name, OU=Your Org, O=Your Company, L=City, ST=State, C=BR"
+          ls -lh android/app/key.jks
 
       - name: Decode .env
         run: echo "${{ secrets.FLUTTER_ENV }}" > ${{ github.workspace }}/.env
@@ -47,8 +60,9 @@ jobs:
       - name: Upload Artifact
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ github.workspace }}/build/app/outputs/flutter-apk/*.apk,${{ github.workspace }}/build/app/outputs/bundle/prodRelease/app-prod-release.aab"
+          artifacts: |
+            ${{ github.workspace }}/build/app/outputs/flutter-apk/*.apk,
+            ${{ github.workspace }}/build/app/outputs/bundle/prodRelease/app-prod-release.aab
           allowUpdates: true
           makeLatest: true
           omitBodyDuringUpdate: true
-
