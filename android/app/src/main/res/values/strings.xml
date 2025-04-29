@@ -2,7 +2,7 @@
    
     <string name="bootstrap_installer_title">Instalando Bootstrap</string>
     <!-- Outras strings que você precisar -->
-    <string name="app_name">VHEditor</string>
+    
     <string name="new_editor_header">New Editor Server</string>
     <string name="loading">Loading...</string>
     <string name="server_version">Server version: %s</string>
